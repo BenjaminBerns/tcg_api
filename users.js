@@ -19,10 +19,8 @@ function RegisterUser(req, res)
     }
 
     let users = [];
-    if (fs.existsSync(filePath)) {
-        const fileData = fs.readFileSync(filePath, 'utf-8');
-        users = JSON.parse(fileData);
-    }
+    const fileData = fs.readFileSync(filePath, 'utf-8');
+    users = JSON.parse(fileData);
 
     if (users.find(u => u.username === username)) {
         return res.status(400).json({ message: "Erreur : Username déjà existant" });
@@ -36,12 +34,18 @@ function RegisterUser(req, res)
         users = JSON.parse(fileData);
 
         id = users.length + 1;
+        const collection = [];
+        const token = "";
+        const lastBooster = "";
 
         // Ajouter le nouvel utilisateur
         const user = {
             id: id,
             username: username,
-            password: password
+            password: password,
+            collection: collection,
+            token: token,
+            lastBooster: lastBooster
         };
         users.push( user );
 
@@ -95,7 +99,7 @@ function Login(req, res)
 
     let TokenGenerator = require( 'token-generator' )({
         salt: 'your secret ingredient for this magic recipe',
-        timestampMap: 'abcdefghij', // 10 chars array for obfuscation proposes
+        timestampMap: 'abcdefghij',
     });
 
     let token = TokenGenerator.generate();

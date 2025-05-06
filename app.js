@@ -22,7 +22,7 @@ app.get("/user", users.User);
 
 app.post("/disconnect", users.Disconnect);
 
-app.post("/booster", cards.booster)
+app.post("/booster", cards.Booster)
 
 app.listen(3000, () => {
     console.log("Serveur démarré sur http://localhost:3000");
