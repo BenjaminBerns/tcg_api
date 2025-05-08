@@ -16,8 +16,7 @@ function Booster(req, res) {
     let user = users.find(u => u.token === token);
 
     if (!user) {
-        res.status(401).json({ message: "utilisateur introuvable" });
-        return;
+        return res.status(401).json({ message: "utilisateur introuvable" });
     }
 
     let now = Date.now();
@@ -53,4 +52,19 @@ function Booster(req, res) {
     }
 }
 
-module.exports = { Booster };
+function Cards(req, res) {
+
+    let cards = JSON.parse(fs.readFileSync('data/card.json', 'utf-8'));
+
+    let cardsList = [];
+
+    for (let i = 0; i < cards.length; i++) {
+        cardsList.push(cards[i]);
+    }
+
+    res.status(200).json({
+        CardsList: cardsList
+    });
+}
+
+module.exports = { Booster, Cards };

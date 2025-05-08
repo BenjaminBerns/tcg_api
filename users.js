@@ -3,6 +3,8 @@ const path = require('path');
 
 function RegisterUser(req, res)
 {
+    
+    console.log(req.body);
     if(!req.body)
     {
         res.status(400).json({"message": "Erreur : Aucune données"});
@@ -12,7 +14,7 @@ function RegisterUser(req, res)
     let username = req.body.username;
     let password = req.body.password;
     let id = 0;
-    const filePath = path.join(__dirname, 'users.json');
+    const filePath = path.join(__dirname, 'data/user.json');
 
     if (!username || !password) {
         res.status(400).json({ "message": "Erreur : Username ou mot de passe manquant " });
