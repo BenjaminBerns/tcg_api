@@ -91,17 +91,17 @@ function Login(req, res)
     const user = users.find(u => u.username === username);
 
     if (!user) {
-        return res.status(404).json({ message: "Utilisateur introuvable" });
+        return res.status(400).json({ message: "Utilisateur introuvable" });
     }
 
     if (user.password !== password) {
-        return res.status(401).json({ message: "Mot de passe incorrect" });
+        return res.status(400).json({ message: "Mot de passe incorrect" });
     }
 
 
     let TokenGenerator = require( 'token-generator' )({
         salt: 'your secret ingredient for this magic recipe',
-        timestampMap: 'abcdefghij',
+        timestampMap: 'TurKEY1234',
     });
 
     let token = TokenGenerator.generate();
@@ -114,6 +114,7 @@ function Login(req, res)
 
     fs.writeFileSync('data/user.json', JSON.stringify(users), 'utf-8');
 
+    if (user.username == username && password == user.password) {
         res.status(201).json({
             message: "Authentification réussi !",
             user: username,
@@ -122,6 +123,7 @@ function Login(req, res)
                 token: token
             }
         });
+    }
 }
 
 function User(req, res) {
@@ -164,7 +166,11 @@ function Disconnect(req, res) {
 
     users = JSON.parse(fileData);
 
-    let token = req.body.token;
+    const token = req.body.token;
+
+    if (!token || token.trim() === '') {
+        return res.status(400).json({ message: "Erreur : Token manquant ou invalide" });
+    }
 
     const user = users.find(u => u.token === token);
     

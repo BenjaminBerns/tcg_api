@@ -22,9 +22,9 @@ app.post("/register", users.RegisterUser);
 
 app.post("/login", users.Login);
 
-app.get("/user", users.User);
+app.post("/user", users.User);
 
-app.post("/disconnect", users.Disconnect);
+app.post("/logout", users.Disconnect);
 
 app.post("/booster", cards.Booster)
 
@@ -32,6 +32,14 @@ app.get("/cards", cards.Cards);
 
 app.listen(3000, () => {
     console.log("Serveur démarré sur http://localhost:3000");
+    console.log("  ___                    _              _____  ____ _   __ ________   _________   _ ");
+    console.log(" / _ \\                  | |            | ___ \\  _  | | / /|  ___|  \\/  |  _  | \\ | |");
+    console.log("/ /_\\ \\_ __   __ _ _   _| | __ _ _ __  | |_/ / | | | |/ / | |__ | .  . | | | |  \\| |");
+    console.log("|  _  | '_  \\/ _` | | | | |/ _` | '__| |  __/| | | |    \\ |  __|| |\\/| | | | | . ` |");
+    console.log("| | | | | | | (_| | |_| | | (_| | |    | |   \\ \\_/ / |\\  \\| |___| |  | \\ \\_/ / |\\  |");
+    console.log("\\_| |_/_| |_|\\__, |\\__,_|_|\\__,_|_|    \\_|    \\___/\\_| \\_/\\____/\\_|  |_/\\___/\\_| \\_/");
+    console.log("              __/ |                                                                 ");
+    console.log("             |___/                                                                  ");
 });
 
 app.use(cors({

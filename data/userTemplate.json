@@ -1,0 +1,28 @@
+[
+    {
+        "id":1,
+        "username":"benji",
+        "password":"159159",
+        "collection":[],
+        "token":"",
+        "lastBooster":""
+        },
+    
+        {
+        "id":2,
+        "username":"Eddy",
+        "password":"eKebriti",
+        "collection":[[16,2,53,15,55],[17,15,62,32,20],12,40,5,30,47,16,59,43,7,31,58,27],
+        "token":"139dbhegiagabc",
+        "lastBooster":1746731516121
+        },
+        
+        {
+        "id":3,
+        "username":"Romain",
+        "password":"mdp123*",
+        "collection":[],
+        "token":"",
+        "lastBooster":""
+    }
+]
