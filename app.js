@@ -3,6 +3,8 @@ const app = express();
 const users = require("./users");
 const cards = require("./card");
 const cors = require('cors');
+const sequelize = require("./config/db");
+const User = require('./Models/users');
 
 app.use(cors()); // autorise toutes les origines
 
@@ -22,7 +24,7 @@ app.post("/register", users.RegisterUser);
 
 app.post("/login", users.Login);
 
-app.post("/user", users.User);
+app.post("/user", users.Users);
 
 app.post("/logout", users.Disconnect);
 
@@ -30,9 +32,17 @@ app.post("/booster", cards.Booster)
 
 app.get("/cards", cards.Cards);
 
+app.post("/getCards", cards.GetCardsByToken);
+
+app.post("/getCardsBooster", cards.GetCardsBooster);
+
+app.post("/convert", users.Convert);
+
+app.get("/getAllUser", users.getAllUsers);
+
 app.listen(3000, () => {
     console.log("Serveur démarré sur http://localhost:3000");
-    console.log("  ___                    _              _____  ____ _   __ ________   _________   _ ");
+    console.log("  ___                    _              _____  ____ _   __ ________  __________   _ ");
     console.log(" / _ \\                  | |            | ___ \\  _  | | / /|  ___|  \\/  |  _  | \\ | |");
     console.log("/ /_\\ \\_ __   __ _ _   _| | __ _ _ __  | |_/ / | | | |/ / | |__ | .  . | | | |  \\| |");
     console.log("|  _  | '_  \\/ _` | | | | |/ _` | '__| |  __/| | | |    \\ |  __|| |\\/| | | | | . ` |");
@@ -42,6 +52,6 @@ app.listen(3000, () => {
     console.log("             |___/                                                                  ");
 });
 
-app.use(cors({
-    origin: 'http://localhost:4200' //Accès accordé à localhost:4200 uniquement !
-}));
+//app.use(cors({
+  //  origin: 'http://localhost:4200' //Accès accordé à localhost:4200 uniquement !
+//}));

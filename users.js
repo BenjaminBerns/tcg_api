@@ -1,10 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const { users, cards, collection } = require('./config/db');
 
 function RegisterUser(req, res)
 {
-    
-    console.log(req.body);
     if(!req.body)
     {
         res.status(400).json({"message": "Erreur : Aucune données"});
@@ -13,7 +12,7 @@ function RegisterUser(req, res)
 
     let username = req.body.username;
     let password = req.body.password;
-    let id = 0;
+    let id = 0; 
     const filePath = path.join(__dirname, 'data/user.json');
 
     if (!username || !password) {
@@ -126,7 +125,7 @@ function Login(req, res)
     }
 }
 
-function User(req, res) {
+function Users(req, res) {
     if (!req.body) {
         res.status(400).json({ "message": "Erreur : Aucune données" });
         return;
@@ -140,7 +139,6 @@ function User(req, res) {
     let users = JSON.parse(dataUsers);
 
     let user = users.find(u => u.token === token);
-    console.log(user);
     if (user && token) {
         return res.status(200).json({
             message: "Utilisateur trouvé",
@@ -192,4 +190,101 @@ function Disconnect(req, res) {
         });
 }
 
-module.exports = { RegisterUser, Login, User, Disconnect };
+function Convert(req, res) {
+    if(!req.body)
+        {
+            res.status(400).json({"message": "Erreur : Aucune données"});
+            return;
+    }
+    
+    const fileData = fs.readFileSync('data/user.json', 'utf-8');
+    const card = fs.readFileSync('data/card.json', 'utf-8');
+
+    users = JSON.parse(fileData);
+    cards = JSON.parse(card);
+
+    const token = req.body.token;
+    const id = req.body.id;
+
+    if (id == null || token == null) {
+        res.status(400).json({"message": "Erreur : Données invalide | manquante"});
+        return;
+    }
+
+    const user = users.find(u => u.token === token);
+    const qtt = cards.find(n => n.id === id);
+    const userCard = user.collection.find(c => c.id === parseInt(id));
+    
+    if (!userCard) {
+        return res.status(400).json({
+            message: "Erreur : Cette carte ne fait pas partie de votre collection."
+        });
+    }
+    
+    let nb = userCard.nb;
+    let currency = parseInt(user.currency);
+    
+    if (nb > 1) {
+        if (cards.rarity === "common") {
+            currency = currency + (nb - 1) * 20;
+            console.log("argent commun : " + currency);
+        } else if (cards.rarity === "rare") {
+            currency = currency + (nb - 1)*60;
+            console.log("argent rare : " + currency);
+        } else {
+            currency = currency + (nb - 1)*200;
+            console.log("argent Légendaire : " + currency);
+        }
+    }
+    else {
+        res.status(400).json({"message": "Erreur : Cette carte est un unique exemplaire de votre collection, vous ne pouver pas la supprimer"});
+    }
+    
+    console.log(currency);
+    user.currency = currency;
+    userCard.nb = 1;
+    console.log(currency);
+
+    fs.writeFileSync('data/user.json', JSON.stringify(users), 'utf-8');
+
+    res.status(201).json({
+        message: "Soldes mis à jour ",
+        currency: currency
+    });
+}
+
+//------------------------------------------------------DATABASE-API------------------------------------------------------//
+
+// 🔁 Créer un utilisateur
+async function createTestUser() {
+  try {
+    const users = await User.create({
+      username: "testuser",
+      email: "testuser@example.com",
+      password: "123456", 
+      role: "admin",
+      isActive: true,
+      lastLogin: new Date()
+    });
+    console.log("Utilisateur créé :", users.toJSON());
+  } catch (err) {
+    console.error("Erreur de création :", err);
+  }
+}
+
+// 📥 Récupérer tous les utilisateurs
+async function getAllUsers(req, res) {
+  const utilisateur = await users.findAll();
+  res.status(201).json({
+        message: "Soldes mis à jour ",
+        utilisateur: utilisateur
+    });
+}
+
+function createUser() {
+    (async () => {
+        await createTestUser();
+    })();
+}
+
+module.exports = { createUser, getAllUsers, RegisterUser, Login, Users, Disconnect, Convert };
