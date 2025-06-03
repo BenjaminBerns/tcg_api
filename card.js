@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { users, cards, collection } = require('./config/db');
 
 function Booster(req, res) {
     if (!req.body || !req.body.token) {
@@ -154,4 +155,14 @@ function GetCardsBooster(req, res) {
 
 }
 
-module.exports = { Booster, Cards, GetCardsByToken, GetCardsBooster };
+//------------------------------------------------------DATABASE-API------------------------------------------------------//
+
+async function getAllCards(req, res) {
+  const cartes = await cards.findAll();
+  res.status(201).json({
+        message: "Cartes récupérer !",
+        cartes: cartes
+    });
+}
+
+module.exports = { getAllCards, Booster, Cards, GetCardsByToken, GetCardsBooster };

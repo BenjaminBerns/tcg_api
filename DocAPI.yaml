@@ -1,0 +1,285 @@
+openapi: 3.0.0
+info:
+  title: API TCG
+  description: API pour la gestion des utilisateurs et des cartes dans le jeu TCG.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /register:
+    post:
+      summary: Inscription d'un nouvel utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Utilisateur enregistré avec succès
+        '400':
+          description: Données invalides ou utilisateur existant
+  /login:
+    post:
+      summary: Connexion d'un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Authentification réussie
+        '400':
+          description: Nom d'utilisateur ou mot de passe incorrect
+        '415':
+          description: Mauvais type de contenu
+  /user:
+    post:
+      summary: Récupérer les informations de l'utilisateur via le token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Informations de l'utilisateur
+        '400':
+          description: Token invalide
+  /logout:
+    post:
+      summary: Déconnexion de l'utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+      responses:
+        '201':
+          description: Déconnexion réussie
+        '400':
+          description: Token manquant ou invalide
+  /booster:
+    post:
+      summary: Ouvrir un booster de cartes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Booster ouvert avec succès
+        '401':
+          description: Authentification requise
+        '403':
+          description: Accès interdit (booster déjà ouvert aujourd’hui)
+        '429':
+          description: Trop de boosters ouverts récemment (cooldown de cinq minutes)
+        '500':
+          description: Erreur serveur
+  /cards:
+    get:
+      summary: Récupérer la liste de toutes les cartes
+      responses:
+        '200':
+          description: Liste des cartes
+  /getCards:
+    post:
+      summary: Récupérer les cartes de l'utilisateur via le token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Liste des cartes de l'utilisateur
+        '400':
+          description: Token manquant ou invalide
+  /getCardsBooster:
+    post:
+      summary: Récupérer les cartes obtenues dans un booster
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+                - id
+              properties:
+                token:
+                  type: string
+                id:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Liste des cartes du booster
+        '400':
+          description: Données invalides
+  /convert:
+    post:
+      summary: Convertir des cartes en monnaie virtuelle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+                - id
+              properties:
+                token:
+                  type: string
+                id:
+                  type: integer
+      responses:
+        '201':
+          description: Conversion réussie
+        '400':
+          description: Données invalides ou carte non éligible
+  /LoginBdd:
+    post:
+      summary: Connexion via la base de données
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Connexion réussie
+        '400':
+          description: Données invalides
+  /DisconnectBdd:
+    post:
+      summary: Déconnexion via la base de données
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+              properties:
+                username:
+                  type: string
+      responses:
+        '201':
+          description: Déconnexion réussie
+        '400':
+          description: Données invalides
+  /createTestUser:
+    post:
+      summary: Créer un utilisateur de test
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Utilisateur de test créé
+        '400':
+          description: Données invalides
+  /getAllCards:
+    get:
+      summary: Récupérer toutes les cartes depuis la base de données
+      responses:
+        '200':
+          description: Liste des cartes
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        password:
+          type: string
+        token:
+          type: string
+        lastBooster:
+          type: integer
+        collection:
+          type: array
+          items:
+            $ref: '#/components/schemas/Card'
+    Card:
+      type: object
+      properties:
+        id:
+          type: integer
+        nb:
+          type: integer
+        rarity:
+          type: string

@@ -255,36 +255,97 @@ function Convert(req, res) {
 
 //------------------------------------------------------DATABASE-API------------------------------------------------------//
 
-// 🔁 Créer un utilisateur
-async function createTestUser() {
-  try {
-    const users = await User.create({
-      username: "testuser",
-      email: "testuser@example.com",
-      password: "123456", 
-      role: "admin",
-      isActive: true,
-      lastLogin: new Date()
+// Créer un users
+async function createTestUser(req, res) {
+
+    console.log(req.body.username, req.body.password);
+  
+    try {
+    const util = await users.create({
+      username: req.body.username,
+      password: req.body.password, 
+      token: null,
+      lastBooster: 0,
+      currency: null,
+        createdAt: Date.now(),
+        updateAt: Date.now(),
     });
-    console.log("Utilisateur créé :", users.toJSON());
+      res.status(201).json({
+        message: "user crée",
+        utilisateur: util
+    });
   } catch (err) {
     console.error("Erreur de création :", err);
   }
 }
 
-// 📥 Récupérer tous les utilisateurs
-async function getAllUsers(req, res) {
-  const utilisateur = await users.findAll();
-  res.status(201).json({
-        message: "Soldes mis à jour ",
+// Récupérer tous les utilisateurs (tests bdd requete etc ..)
+async function LoginBdd(req, res) {
+
+    if(!req.body)
+    {
+        res.status(400).json({"message": "Erreur : Aucune données"});
+        return;
+    }
+    
+    let name = req.body.username;
+    let pass = req.body.password;
+
+    console.log(name, pass);
+
+    if (!name || !pass) {
+        res.status(400).json({ "message": "Erreur : Username ou mot de passe manquant " });
+    }
+
+    let TokenGenerator = require( 'token-generator' )({
+        salt: 'your secret ingredient for this magic recipe',
+        timestampMap: 'TurKEY1234',
+    });
+
+    let token = TokenGenerator.generate();
+
+    const utilisateur = await users.findOne({
+            where:{
+                username: name,
+                password: pass
+            }
+    });
+    utilisateur.token = token;
+    await utilisateur.save();
+    res.status(201).json({
+        message: "utilisateur connecté !",
         utilisateur: utilisateur
     });
 }
 
-function createUser() {
-    (async () => {
-        await createTestUser();
-    })();
+// Récupérer tous les utilisateurs (tests bdd requete etc ..)
+async function DisconnectBdd(req, res) {
+
+    if(!req.body)
+    {
+        res.status(400).json({"message": "Erreur : erreur de données, problème applicatif"});
+        return;
+    }
+    
+    let name = req.body.username;
+
+    console.log(name);
+
+    if (!name ) {
+        res.status(400).json({ "message": "Erreur : Username manquant " });
+    }
+
+    const utilisateur = await users.findOne({
+            where:{
+                username: name
+            }
+    });
+    utilisateur.token = null;
+    await utilisateur.save();
+    res.status(201).json({
+        message: "utilisateur connecté !",
+        utilisateur: utilisateur
+    });
 }
 
-module.exports = { createUser, getAllUsers, RegisterUser, Login, Users, Disconnect, Convert };
+module.exports = { createTestUser, LoginBdd, DisconnectBdd, RegisterUser, Login, Users, Disconnect, Convert };

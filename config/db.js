@@ -11,9 +11,6 @@ const users = require('../Models/users')(sequelize, DataTypes);
 const cards = require('../Models/cards')(sequelize, DataTypes);
 const collection = require('../Models/collection')(sequelize, DataTypes);
 
-users.hasMany(cards, { foreignKey: 'usersId' });
-cards.belongsTo(users, { foreignKey: 'usersId' });
-
 users.belongsToMany(cards, { through: collection, foreignKey: 'usersId' });
 cards.belongsToMany(users, { through: collection, foreignKey: 'cardsId' });
 

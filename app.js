@@ -38,7 +38,13 @@ app.post("/getCardsBooster", cards.GetCardsBooster);
 
 app.post("/convert", users.Convert);
 
-app.get("/getAllUser", users.getAllUsers);
+app.post("/LoginBdd", users.LoginBdd);
+
+app.post("/DisconnectBdd", users.DisconnectBdd);
+
+app.post("/createTestUser", users.createTestUser);
+
+app.get("/getAllCards", cards.getAllCards);
 
 app.listen(3000, () => {
     console.log("Serveur démarré sur http://localhost:3000");
